@@ -1,0 +1,10 @@
+.jz-validator {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 3px;
+
+  .jz-validator-error {
+    color: $error-color;
+    font-size: 13px;
+  }
+}

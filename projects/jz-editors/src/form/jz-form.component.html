@@ -1,0 +1,43 @@
+<div class="jz-form">
+  <div class="jz-form-item" *ngFor="let item of items">
+    <jz-text-editor
+      *ngIf="item.editorOptions.type === 'text'"
+      [value]="getFieldValue(item.fieldName)"
+      [options]="item.editorOptions"
+      (onValueChanged)="onEditorValueChanged($event, item)"
+      (onReady)="onEditorReady($event, item.fieldName)">
+    </jz-text-editor>
+
+    <jz-number-editor
+      *ngIf="item.editorOptions.type === 'number'"
+      [value]="getFieldValue(item.fieldName)"
+      [options]="item.editorOptions"
+      (onValueChanged)="onEditorValueChanged($event, item)"
+      (onReady)="onEditorReady($event, item.fieldName)">
+    </jz-number-editor>
+
+    <jz-checkbox-editor
+      *ngIf="item.editorOptions.type === 'checkbox'"
+      [value]="getFieldValue(item.fieldName)"
+      [options]="item.editorOptions"
+      (onValueChanged)="onEditorValueChanged($event, item)"
+      (onReady)="onEditorReady($event, item.fieldName)">
+    </jz-checkbox-editor>
+
+    <jz-date-editor
+      *ngIf="item.editorOptions.type === 'date'"
+      [value]="getFieldValue(item.fieldName)"
+      [options]="item.editorOptions"
+      (onValueChanged)="onEditorValueChanged($event, item)"
+      (onReady)="onEditorReady($event, item.fieldName)">
+    </jz-date-editor>
+
+    <jz-select-editor
+      *ngIf="item.editorOptions.type === 'select'"
+      [value]="getFieldValue(item.fieldName)"
+      [options]="item.editorOptions"
+      (onValueChanged)="onEditorValueChanged($event, item)"
+      (onReady)="onEditorReady($event, item.fieldName)">
+    </jz-select-editor>
+  </div>
+</div>

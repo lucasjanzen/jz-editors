@@ -1,0 +1,9 @@
+.jz-label {
+  color: $label-color;
+  font-size: 14px;
+  padding: 3px;
+
+  .jz-label-required-mark {
+    color: $error-color;
+  }
+}

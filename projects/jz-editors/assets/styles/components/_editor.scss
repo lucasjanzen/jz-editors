@@ -1,0 +1,13 @@
+.jz-editor {
+  display: flex;
+  flex-direction: column;
+
+  .jz-editor-input {
+    border: 1px solid #979797;
+    border-radius: 4px;
+    color: $editor-text-color;
+    font-size: 14px;
+    height: $editor-height;
+    padding: 10px;
+  }
+}

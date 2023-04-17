@@ -1,0 +1,19 @@
+<div class="jz-date-editor jz-editor">
+  <jz-label *ngIf="label" [text]="label" [required]="required"></jz-label>
+
+  <input
+    #InputElement
+    class="jz-editor-input"
+    [id]="name || label"
+    [name]="name || label"
+    [disabled]="disabled"
+    [type]="dateMode"
+    [(ngModel)]="value" />
+
+  <jz-validator
+    [value]="value"
+    [rules]="validationRules"
+    (onReady)="onValidatorReady($event)"
+    (onValidate)="onValidate($event)">
+  </jz-validator>
+</div>
