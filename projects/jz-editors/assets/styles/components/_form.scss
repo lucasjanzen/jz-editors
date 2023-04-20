@@ -1,0 +1,11 @@
+.jz-form {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  .jz-form-row {
+    display: grid;
+    gap: 20px;
+  }
+}

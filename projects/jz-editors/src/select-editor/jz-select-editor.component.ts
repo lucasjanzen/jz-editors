@@ -24,12 +24,8 @@ export class JZSelectEditorComponent
   /** Lista de registros disponíveis para seleção. */
   @Input() dataSource: object[];
 
-  private _listAlreadyOpened: boolean;
+  listAlreadyOpened: boolean;
   private _dropdownOpened: boolean;
-
-  get listAlreadyOpened() {
-    return this._listAlreadyOpened;
-  }
 
   ngOnDestroy() {
     document.removeEventListener('click', this._documentClick.bind(this));
@@ -46,7 +42,7 @@ export class JZSelectEditorComponent
   }
 
   onToggleDropdown(type?: 'close' | 'open') {
-    this._listAlreadyOpened = true;
+    this.listAlreadyOpened = true;
 
     const { classList } = this._containerElement.nativeElement;
     const alreadyOpened = classList.contains(DROPDOWN_OPENED_CSS_CLASS);

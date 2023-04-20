@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { JZFormItem } from 'jz-editors';
+import { JZFormComponent, JZFormItem } from 'jz-editors';
 import { JZEditorValueChangedEvent } from 'jz-editors/src/shared';
 
 @Component({
@@ -8,6 +8,8 @@ import { JZEditorValueChangedEvent } from 'jz-editors/src/shared';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  formComponent: JZFormComponent;
+
   selectDataSource = [
     { id: 1, name: 'Teste' },
     { id: 2, name: 'Teste 2' },
@@ -29,27 +31,35 @@ export class AppComponent {
         keyExpr: 'id',
       },
     },
-    // { type: 'simple', fieldName: 'nome', editorOptions: { type: 'text', required: true, mode: 'text', label: 'Nome' } },
-    // {
-    //   type: 'simple',
-    //   fieldName: 'email',
-    //   editorOptions: { type: 'text', required: true, mode: 'email', label: 'Email' },
-    // },
-    // {
-    //   type: 'simple',
-    //   fieldName: 'data',
-    //   editorOptions: { type: 'date', required: true, label: 'Data' },
-    // },
-    // {
-    //   type: 'simple',
-    //   fieldName: 'senha',
-    //   editorOptions: { type: 'text', required: true, mode: 'password', label: 'Senha' },
-    // },
-    // { type: 'simple', fieldName: 'numero', editorOptions: { type: 'number', required: true, label: 'Numero' } },
+    { type: 'simple', fieldName: 'nome', editorOptions: { type: 'text', required: true, mode: 'text', label: 'Nome' } },
+    {
+      type: 'simple',
+      fieldName: 'email',
+      editorOptions: { type: 'text', required: true, mode: 'email', label: 'Email' },
+    },
+    {
+      type: 'simple',
+      fieldName: 'data',
+      editorOptions: { type: 'date', required: true, label: 'Data' },
+    },
+    {
+      type: 'simple',
+      fieldName: 'senha',
+      editorOptions: { type: 'text', required: true, mode: 'password', label: 'Senha' },
+    },
+    { type: 'simple', fieldName: 'numero', editorOptions: { type: 'number', required: true, label: 'Numero' } },
   ];
 
   onDataChanged(event: JZEditorValueChangedEvent) {
     console.log('onDataChanged');
     console.log(event);
+  }
+
+  onFormReady(component: JZFormComponent) {
+    this.formComponent = component;
+  }
+
+  validateFields() {
+    this.formComponent.validate();
   }
 }

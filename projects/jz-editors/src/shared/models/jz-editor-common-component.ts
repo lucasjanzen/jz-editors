@@ -75,6 +75,8 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
       this.inputElement.nativeElement.addEventListener('focusin', this.onFocusIn.bind(this));
       this.inputElement.nativeElement.addEventListener('focusout', this.onFocusOut.bind(this));
     }
+
+    this.onReady.emit(this as any);
   }
 
   protected execOnInit() {
@@ -90,7 +92,6 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
     }
 
     this.loaded = true;
-    this.onReady.emit(this as any);
   }
 
   onFocusIn() {

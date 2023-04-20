@@ -1,7 +1,9 @@
 import { JZEditorCommonOptions } from 'jz-editors/src/shared/models';
 
 export interface JZNumberEditorOptions extends JZEditorCommonOptions {
-  value?: number;
+  /** Especifica se o valor zero (0) deve ser considerado válido. Padrão é 'false'. */
   zeroIsValid?: boolean;
+
+  value?: number;
   type: 'number';
 }

@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { JZValidatorError, JZValidatorRequiredRule, JZValidatorRules, JZValidatorValidateEvent } from './models';
 
-const EMAIL_REGEX =
-  /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-
 @Component({
   selector: 'jz-validator',
   templateUrl: './jz-validator.component.html',
@@ -45,12 +42,12 @@ export class JZValidatorComponent implements OnInit {
     this.rules?.forEach(rule => {
       switch (rule.type) {
         case 'email':
-          if (this.validateEmail()) {
+          if (!this.validateEmail()) {
             newErrors.push({ message: rule.message || 'E-mail inválido', rule });
           }
           break;
         case 'required':
-          if (this.validateRequired(rule)) {
+          if (!this.validateRequired(rule)) {
             newErrors.push({ message: rule.message || 'Campo obrigatório', rule });
           }
           break;
@@ -65,12 +62,15 @@ export class JZValidatorComponent implements OnInit {
   }
 
   private validateRequired(rule: JZValidatorRequiredRule) {
-    return (
-      this.value === null || this.value === undefined || this.value === '' || (!rule.zeroIsValid && this.value === 0)
+    return !(
+      this.value === null ||
+      this.value === undefined ||
+      this.value === '' ||
+      (!rule.zeroIsValid && this.value === 0)
     );
   }
 
   private validateEmail() {
-    return EMAIL_REGEX.test(this.value);
+    return new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g).test(this.value);
   }
 }

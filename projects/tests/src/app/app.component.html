@@ -1,5 +1,12 @@
 <div class="tests-container">
   <jz-text-editor mode="text" label="nome" [required]="true"></jz-text-editor>
 
-  <jz-form [data]="formData" [items]="formItens" (onDataChanged)="onDataChanged($event)"></jz-form>
+  <jz-form
+    [data]="formData"
+    [items]="formItens"
+    (onDataChanged)="onDataChanged($event)"
+    (onReady)="onFormReady($event)">
+  </jz-form>
+
+  <span (click)="validateFields()">Validar campos</span>
 </div>
