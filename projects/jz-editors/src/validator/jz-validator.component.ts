@@ -35,28 +35,30 @@ export class JZValidatorComponent implements OnInit {
     this.onReady.emit(this);
   }
 
-  validate() {
+  async validate() {
     this._errors = [];
     const newErrors: JZValidatorError[] = [];
 
-    this.rules?.forEach(rule => {
-      switch (rule.type) {
-        case 'email':
-          if (!this.validateEmail()) {
-            newErrors.push({ message: rule.message || 'E-mail inválido', rule });
-          }
-          break;
-        case 'required':
-          if (!this.validateRequired(rule)) {
-            newErrors.push({ message: rule.message || 'Campo obrigatório', rule });
-          }
-          break;
+    if (this.rules) {
+      for await (const rule of this.rules) {
+        switch (rule.type) {
+          case 'email':
+            if (!this.validateEmail()) {
+              newErrors.push({ message: rule.message || 'E-mail inválido', rule });
+            }
+            break;
+          case 'required':
+            if (!this.validateRequired(rule)) {
+              newErrors.push({ message: rule.message || 'Campo obrigatório', rule });
+            }
+            break;
+        }
       }
-    });
+    }
 
     this._errors = newErrors;
-    const isValid = !!this._errors?.length;
-    this.onValidate.emit({ isValid, errors: this._errors });
+    const isValid = !this._errors?.length;
+    this.onValidate.emit({ isValid: isValid, errors: this._errors });
 
     return isValid;
   }

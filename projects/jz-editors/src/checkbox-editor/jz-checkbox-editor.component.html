@@ -1,14 +1,16 @@
 <div class="jz-checkbox-editor jz-editor">
-  <jz-label *ngIf="label" [text]="label" [required]="required"></jz-label>
+  <div class="jz-checkbox-editor-input">
+    <input
+      #InputElement
+      class="jz-editor-input"
+      [id]="name || label"
+      [name]="name || label"
+      [disabled]="disabled"
+      type="checkbox"
+      [(ngModel)]="value" />
 
-  <input
-    #InputElement
-    class="jz-editor-input"
-    [id]="name || label"
-    [name]="name || label"
-    [disabled]="disabled"
-    type="checkbox"
-    [(ngModel)]="value" />
+    <jz-label *ngIf="label" [text]="label"></jz-label>
+  </div>
 
   <jz-validator
     [value]="value"

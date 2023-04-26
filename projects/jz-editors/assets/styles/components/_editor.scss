@@ -2,12 +2,32 @@
   display: flex;
   flex-direction: column;
 
-  .jz-editor-input {
-    border: 1px solid #979797;
+  &:not(.jz-checkbox-editor) .jz-editor-input {
+    border: 1px solid $editor-border-color;
     border-radius: 4px;
     color: $editor-text-color;
     font-size: 14px;
     height: $editor-height;
     padding: 10px;
+
+    &:not(.jz-invalid) {
+      &.jz-focused,
+      &:focus-visible {
+        box-shadow: 0 0px 1px 1px $editor-border-color !important;
+      }
+
+      &:hover {
+        box-shadow: 0 0px 1px 1px transparentize($editor-border-color, 0.6);
+      }
+    }
+
+    &.jz-invalid {
+      // box-shadow: 0 0px 1px 1px #d50e0e;
+      border-color: #d50e0e;
+    }
+
+    &:focus-visible {
+      outline: unset !important;
+    }
   }
 }

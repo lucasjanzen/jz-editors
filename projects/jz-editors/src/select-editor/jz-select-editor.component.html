@@ -2,13 +2,19 @@
   <jz-label *ngIf="label" [text]="label" [required]="required"></jz-label>
 
   <div #ContainerElement class="jz-select-editor-container">
-    <div #SelectedElement class="jz-select-editor-selected jz-editor-input" (click)="onToggleDropdown()">
-      <span class="jz-select-editor-selected-text"> {{ getValueText() }} </span>
-
-      <span *ngIf="showClearButton" class="jz-select-editor-icon jz-clear-icon material-icons" (click)="reset()">
-        close
+    <div #InputElement class="jz-select-editor-selected jz-editor-input">
+      <span class="jz-select-editor-selected-text" (click)="onToggleDropdown()">
+        {{ getValueText() }}
       </span>
-      <span class="jz-select-editor-icon jz-dropdown-icon material-icons">expand_more</span>
+
+      <div class="jz-select-editor-buttons">
+        <span *ngIf="showClearButton" class="jz-select-editor-icon jz-clear-icon material-icons" (click)="reset()">
+          close
+        </span>
+        <span class="jz-select-editor-icon jz-dropdown-icon material-icons" (click)="onToggleDropdown()">
+          expand_more
+        </span>
+      </div>
     </div>
 
     <div *ngIf="listAlreadyOpened" class="jz-select-editor-wrapper">

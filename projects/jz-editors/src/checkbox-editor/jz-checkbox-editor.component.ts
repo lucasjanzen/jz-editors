@@ -8,9 +8,11 @@ import { JZCheckboxEditorOptions } from './models';
 })
 export class JZCheckboxEditorComponent
   extends JZEditorCommonComponent<string, JZCheckboxEditorOptions, JZCheckboxEditorComponent>
-  implements OnInit {
-  // protected override setOptions() {
-  //   super.setOptions();
-  //   const options = this.options;
-  // }
+  implements OnInit
+{
+  /** Constructor */
+  constructor() {
+    super();
+    this.disableFocusEvents = true;
+  }
 }

@@ -61,6 +61,7 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
   protected internalValue: ValueType;
   protected validatorComponent: JZValidatorComponent;
   protected focused: boolean;
+  protected disableFocusEvents: boolean;
   private _options: OptionsType;
   private _valueControl: ValueType;
 
@@ -71,7 +72,7 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
   ngAfterViewInit() {
     this.controlInvalidStyle();
 
-    if (this.inputElement?.nativeElement) {
+    if (this.inputElement?.nativeElement && !this.disableFocusEvents) {
       this.inputElement.nativeElement.addEventListener('focusin', this.onFocusIn.bind(this));
       this.inputElement.nativeElement.addEventListener('focusout', this.onFocusOut.bind(this));
     }
@@ -96,10 +97,12 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
 
   onFocusIn() {
     this.focused = true;
+    this.controlFocusedStyle();
   }
 
   onFocusOut() {
     this.focused = false;
+    this.controlFocusedStyle();
 
     if (!JZHelper.isEqual(this._valueControl, this.internalValue)) {
       this.value = this._valueControl;
@@ -115,9 +118,8 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
     this.controlInvalidStyle();
   }
 
-  validate() {
-    this.isValid = this.validatorComponent.validate();
-    this.controlInvalidStyle();
+  async validate() {
+    return this.validatorComponent.validate();
   }
 
   reset() {
@@ -127,6 +129,12 @@ export class JZEditorCommonComponent<ValueType = any, OptionsType = any, Compone
   protected controlInvalidStyle(element: HTMLElement = this.inputElement?.nativeElement) {
     if (element) {
       this.isValid ? element.classList.remove('jz-invalid') : element.classList.add('jz-invalid');
+    }
+  }
+
+  protected controlFocusedStyle(element: HTMLElement = this.inputElement?.nativeElement) {
+    if (element) {
+      this.focused ? element.classList.add('jz-focused') : element.classList.remove('jz-focused');
     }
   }
 

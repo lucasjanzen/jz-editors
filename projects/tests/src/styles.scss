@@ -2,12 +2,16 @@
 
 html,
 body {
-  font-family: 'Roboto', 'RobotoFallback', 'Noto Kufi Arabic', 'Helvetica', 'Arial', sans-serif;
+  margin: 0px;
+  min-height: 100%;
   height: 100%;
-  margin: 0;
-  width: 100%;
 }
 
 * {
   box-sizing: border-box;
+}
+
+app-root {
+  font-family: 'Roboto', 'RobotoFallback', 'Noto Kufi Arabic', 'Helvetica', 'Arial', sans-serif;
+  display: contents;
 }

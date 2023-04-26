@@ -1,11 +1,23 @@
+jz-form {
+  display: contents;
+}
+
 .jz-form {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-  gap: 5px;
 
   .jz-form-row {
     display: grid;
     gap: 20px;
+    padding-bottom: 10px;
+
+    .jz-select-editor {
+      min-width: unset;
+    }
+
+    .jz-checkbox-editor-input {
+      // altura label
+      margin-top: 22px;
+    }
   }
 }

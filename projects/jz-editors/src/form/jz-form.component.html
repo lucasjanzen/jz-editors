@@ -1,6 +1,6 @@
 <div #Form class="jz-form">
   <div #RowElement class="jz-form-row {{ setRowSizes(row, RowElement) }}" *ngFor="let row of rows">
-    <div class="jz-form-item" *ngFor="let item of row.items">
+    <div #ItemElement class="jz-form-item" *ngFor="let item of row.items">
       <jz-text-editor
         *ngIf="item.editorOptions.type === 'text'"
         [value]="getFieldValue(item.fieldName)"

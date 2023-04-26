@@ -12,7 +12,6 @@ export class JZSelectEditorComponent
   extends JZEditorCommonComponent<object, JZSelectEditorOptions, JZSelectEditorComponent>
   implements AfterViewInit, OnInit, OnDestroy
 {
-  @ViewChild('SelectedElement') private _selectedElement: ElementRef<HTMLElement>;
   @ViewChild('ContainerElement') private _containerElement: ElementRef<HTMLElement>;
 
   /** Campo do registro que deve ser utilizado como código único. */
@@ -27,6 +26,11 @@ export class JZSelectEditorComponent
   listAlreadyOpened: boolean;
   private _dropdownOpened: boolean;
 
+  constructor() {
+    super();
+    this.disableFocusEvents = true;
+  }
+
   ngOnDestroy() {
     document.removeEventListener('click', this._documentClick.bind(this));
   }
@@ -35,10 +39,6 @@ export class JZSelectEditorComponent
     super.ngAfterViewInit();
 
     document.addEventListener('click', this._documentClick.bind(this));
-  }
-
-  override controlInvalidStyle() {
-    super.controlInvalidStyle(this._selectedElement?.nativeElement);
   }
 
   onToggleDropdown(type?: 'close' | 'open') {
@@ -50,9 +50,15 @@ export class JZSelectEditorComponent
     if (type === 'close' || alreadyOpened) {
       this._dropdownOpened = false;
       classList.remove(DROPDOWN_OPENED_CSS_CLASS);
+
+      console.log('close');
+      this.onFocusOut();
     } else if (type === 'open' || !alreadyOpened) {
       this._dropdownOpened = true;
       classList.add(DROPDOWN_OPENED_CSS_CLASS);
+
+      console.log('open');
+      this.onFocusIn();
     }
   }
 

@@ -44,6 +44,16 @@ export class AppComponent {
     },
     {
       type: 'simple',
+      fieldName: 'datatime',
+      editorOptions: { type: 'date', dateType: 'datetime', required: true, label: 'Data Time' },
+    },
+    {
+      type: 'simple',
+      fieldName: 'boolean',
+      editorOptions: { type: 'checkbox', label: 'Checkbox' },
+    },
+    {
+      type: 'simple',
       fieldName: 'senha',
       editorOptions: { type: 'text', required: true, mode: 'password', label: 'Senha' },
     },

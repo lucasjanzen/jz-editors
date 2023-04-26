@@ -1,71 +1,62 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
 } from '@angular/core';
 import { JZEditorCommonComponent, JZEditorValueChangedEvent } from 'jz-editors/src/shared/models';
 import { JZScreenService } from 'jz-editors/src/shared/utils';
 import { Subscription } from 'rxjs';
-import { JZFormDataChangedEvent, JZFormItemSizeConfig } from './models';
+import { FormRowConfig, JZFormDataChangedEvent, JZFormItemSizeConfig } from './models';
 import { JZFormItem } from './types';
 
-const FORM_COLUMNS_DEFAULT: JZFormItemSizeConfig = { sm: 1, md: 12, lg: 12, xl: 12 };
-const SIZE_SMALL = 2;
-const SIZE_MEDIUM = 3;
-const SIZE_LARGER = 5;
+const FORM_SIZE_DEFAULT: JZFormItemSizeConfig = { sm: 1, md: 12, lg: 36, xl: 48 };
 
 const FORM_EDITORS_SIZE_DEFAULT = {
   number: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 6, xl: 6 },
+    medium: { sm: 1, md: 3, lg: 6, xl: 6 },
+    large: { sm: 1, md: 4, lg: 6, xl: 6 },
   },
   text: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 8, xl: 8 },
+    medium: { sm: 1, md: 3, lg: 8, xl: 8 },
+    large: { sm: 1, md: 4, lg: 8, xl: 8 },
   },
   date: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 6, xl: 6 },
+    medium: { sm: 1, md: 3, lg: 6, xl: 6 },
+    large: { sm: 1, md: 4, lg: 6, xl: 6 },
   },
   datetime: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 8, xl: 8 },
+    medium: { sm: 1, md: 3, lg: 8, xl: 8 },
+    large: { sm: 1, md: 4, lg: 8, xl: 8 },
   },
   select: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 8, xl: 8 },
+    medium: { sm: 1, md: 3, lg: 8, xl: 8 },
+    large: { sm: 1, md: 4, lg: 8, xl: 8 },
   },
   checkbox: {
-    small: { sm: 1, md: 2, lg: 3, xl: 3 },
-    medium: { sm: 1, md: 3, lg: 4, xl: 4 },
-    large: { sm: 1, md: 4, lg: 5, xl: 5 },
+    small: { sm: 1, md: 2, lg: 6, xl: 6 },
+    medium: { sm: 1, md: 3, lg: 6, xl: 6 },
+    large: { sm: 1, md: 4, lg: 6, xl: 6 },
   },
 };
-
-interface JZFormRowConfig {
-  columns: number[];
-  items: JZFormItem[];
-}
 
 @Component({
   selector: 'jz-form',
   templateUrl: './jz-form.component.html',
 })
 export class JZFormComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('Form') private _formElement: ElementRef<HTMLElement>;
-
+  /** List of form fields. */
   @Input() items: JZFormItem[];
+  /** Form data. */
   @Input() get data() {
     return this._data;
   }
@@ -76,101 +67,35 @@ export class JZFormComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  /** Executed when the value of the 'data' variable is changed. */
   @Output() dataChange = new EventEmitter<object>();
+  /** Executed when the form value is changed. */
   @Output() onDataChanged = new EventEmitter<JZFormDataChangedEvent>();
+  /** Executed when the component is ready. */
   @Output() onReady = new EventEmitter<JZFormComponent>();
 
+  /** List of the editors component. */
   private _editorsComponent = new Map<string, JZEditorCommonComponent>();
+  /** Controls the form data. */
   private _data: object;
-  private _fieldSizes = new Map<string, JZEditorCommonComponent>();
+  /** screen changed event subscription. Used to unsubscribe the observable when the component is destroyed. */
   private _screenSubscription: Subscription;
 
   loaded: boolean;
-  rows: JZFormRowConfig[] = [];
+  rows: FormRowConfig[] = [];
 
-  constructor(private _screenService: JZScreenService) {
-    this._screenSubscription = this._screenService.changed.subscribe();
+  /** Constructor */
+  constructor(private _screenService: JZScreenService, private _changeDetector: ChangeDetectorRef) {
+    this._screenSubscription = this._screenService.changed.subscribe(() => this._setItemsSize());
   }
 
   ngOnInit() {
-    const maxColumns = this._getQtdColumns(FORM_COLUMNS_DEFAULT);
-    console.log(maxColumns);
+    this._setItemsSize();
+  }
 
-    let rowColumns = 0;
-    let rowItems: JZFormItem[] = [];
-    let rowTemplateColumns: number[] = [];
-
-    this.items.forEach(item => {
-      const itemColumn = this._getItemSize(item);
-      const nextRowColumns = rowColumns + itemColumn;
-
-      console.log(itemColumn);
-      console.log(nextRowColumns);
-      console.log(maxColumns);
-
-      if (nextRowColumns > maxColumns) {
-        // if (nextRowColumns < maxColumns) {
-        //   console.log(maxColumns - nextRowColumns);
-
-        //   rowTemplateColumns.push(maxColumns - nextRowColumns);
-        // }
-
-        this.rows.push({ items: rowItems, columns: rowTemplateColumns });
-        rowItems = [];
-        rowColumns = itemColumn;
-        rowTemplateColumns = [];
-      } else {
-        rowColumns = nextRowColumns;
-      }
-
-      rowTemplateColumns.push(itemColumn);
-      rowItems.push(item);
-    });
-
-    console.log(rowColumns);
-    console.log(rowTemplateColumns);
-
-    // if (rowColumns < maxColumns) {
-    //   rowTemplateColumns.push(maxColumns - rowColumns);
-    // }
-    this.rows.push({ items: rowItems, columns: rowTemplateColumns });
-
-    console.log(this.rows);
-
+  ngAfterViewInit(): void {
     this.onReady.emit(this);
   }
-
-  private _getQtdColumns(config: JZFormItemSizeConfig) {
-    const screenSize = this._screenService.currentSize;
-
-    switch (screenSize) {
-      case 'small':
-        return config.sm;
-      case 'medium':
-        return config.md;
-      case 'large':
-        return config.lg;
-      default:
-        //x-large
-        return config.xl;
-    }
-  }
-
-  private _getItemSize(item: JZFormItem) {
-    if (item.size) {
-      if (item.editorOptions.type === 'date' && item.editorOptions.dateType === 'datetime') {
-        return this._getQtdColumns(FORM_EDITORS_SIZE_DEFAULT.datetime[item.size]);
-      } else {
-        return this._getQtdColumns(FORM_EDITORS_SIZE_DEFAULT[item.editorOptions.type][item.size]);
-      }
-    }
-
-    if (item.sizeConfig) return this._getQtdColumns(item.sizeConfig);
-
-    return this._getQtdColumns(FORM_EDITORS_SIZE_DEFAULT[item.editorOptions.type].medium);
-  }
-
-  ngAfterViewInit(): void {}
 
   ngOnDestroy() {
     this._screenSubscription.unsubscribe();
@@ -189,6 +114,27 @@ export class JZFormComponent implements AfterViewInit, OnInit, OnDestroy {
     this._editorsComponent.set(fieldName, component);
   }
 
+  setRowSizes(row: FormRowConfig, rowElement: HTMLElement) {
+    const maxColumns = this._getQtdColumns(FORM_SIZE_DEFAULT);
+    const widthByColumn = rowElement.clientWidth / maxColumns;
+    // diminuir o espaço do gap de forma igual para todos os campos
+    const gapValue = ((row.columns?.length - 1) * 20) / row.columns?.length;
+    let columnsUsed = 0;
+    let templateColumns = '';
+
+    row.columns.forEach(column => {
+      let columnWidth = widthByColumn * column - gapValue;
+      templateColumns += ` ${columnWidth}px`;
+      columnsUsed += column;
+    });
+
+    if (columnsUsed < maxColumns) {
+      templateColumns += ` ${widthByColumn * (maxColumns - columnsUsed)}px`;
+    }
+
+    rowElement.style.gridTemplateColumns = templateColumns;
+  }
+
   validate() {
     this._editorsComponent?.forEach(editor => editor.validate());
   }
@@ -198,34 +144,66 @@ export class JZFormComponent implements AfterViewInit, OnInit, OnDestroy {
     return value || null;
   }
 
-  setRowSizes(row: JZFormRowConfig, rowElement: HTMLElement) {
-    console.log('setRowSizes');
-    console.log(rowElement);
+  private _setItemsSize() {
+    this.rows = [];
 
-    const maxColumns = this._getQtdColumns(FORM_COLUMNS_DEFAULT);
-    const widthByColumn = rowElement.clientWidth / this._getQtdColumns(FORM_COLUMNS_DEFAULT);
-    console.log(widthByColumn);
+    const maxColumns = this._getQtdColumns(FORM_SIZE_DEFAULT);
+    let totalColumns = 0;
+    let itemsList: JZFormItem[] = [];
+    let rowColumns: number[] = [];
 
-    let columnsUsed = 0;
+    this.items?.forEach(item => {
+      const itemSize = this._getItemSize(item);
+      const nextTotal = totalColumns + itemSize;
 
-    let templateColumns = '';
+      if (nextTotal > maxColumns) {
+        this.rows.push({ items: itemsList, columns: rowColumns });
+        itemsList = [];
+        totalColumns = itemSize;
+        rowColumns = [];
+      } else {
+        totalColumns = nextTotal;
+      }
 
-    row.columns.forEach(column => {
-      console.log(widthByColumn * column);
-
-      let columnWidth = widthByColumn * column;
-      if (columnsUsed !== 0) columnWidth -= 20;
-
-      templateColumns += ` ${columnWidth}px`;
-      columnsUsed += column;
+      rowColumns.push(itemSize);
+      itemsList.push(item);
     });
 
-    if (columnsUsed < maxColumns) {
-      templateColumns += ` ${widthByColumn * (maxColumns - columnsUsed)}px`;
+    this.rows.push({ items: itemsList, columns: rowColumns });
+    this._changeDetector.detectChanges();
+  }
+
+  private _getQtdColumns(config: JZFormItemSizeConfig) {
+    const screenSize = this._screenService.currentSize;
+
+    switch (screenSize) {
+      case 'small':
+        return config.sm;
+      case 'medium':
+        return config.md;
+      case 'large':
+        return config.lg;
+      default:
+        // x-large
+        return config.xl;
+    }
+  }
+
+  private _getItemSize(item: JZFormItem) {
+    let sizeConfig: JZFormItemSizeConfig;
+
+    if (!item.sizeConfig) {
+      const itemSize = item.size || 'medium';
+
+      sizeConfig = FORM_EDITORS_SIZE_DEFAULT[item.editorOptions.type][itemSize];
+
+      if (item.editorOptions.type === 'date' && item.editorOptions.dateType === 'datetime') {
+        sizeConfig = FORM_EDITORS_SIZE_DEFAULT.datetime[itemSize];
+      }
+    } else {
+      sizeConfig = item.sizeConfig;
     }
 
-    console.log(templateColumns);
-
-    rowElement.style.gridTemplateColumns = templateColumns;
+    return this._getQtdColumns(sizeConfig);
   }
 }
